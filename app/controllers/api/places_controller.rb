@@ -1,9 +1,12 @@
-class PlacesController < ApplicationController
+class Api::PlacesController < ApplicationController
+  include Authenticable
+
+  before_action :authenticate_with_token
   before_action :set_place, only: [:show, :update, :destroy]
 
   # GET /places
   def index
-    @places = Place.all
+    @places = Place.by_token(@token)
 
     render json: @places
   end
@@ -15,10 +18,10 @@ class PlacesController < ApplicationController
 
   # POST /places
   def create
-    @place = Place.new(place_params)
+    @place = Place.new(place_params.to_h.merge!({ token: @token }))
 
     if @place.save
-      render json: @place, status: :created, location: @place
+      render json: @place, status: :created, location: api_place_url(@place)
     else
       render json: @place.errors, status: :unprocessable_entity
     end
@@ -41,7 +44,7 @@ class PlacesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_place
-      @place = Place.find(params[:id])
+      @place = Place.by_token(@token).find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
