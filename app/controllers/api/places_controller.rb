@@ -1,4 +1,4 @@
-class PlacesController < ApplicationController
+class Api::PlacesController < ApplicationController
   before_action :set_place, only: [:show, :update, :destroy]
 
   # GET /places
@@ -18,7 +18,7 @@ class PlacesController < ApplicationController
     @place = Place.new(place_params)
 
     if @place.save
-      render json: @place, status: :created, location: @place
+      render json: @place, status: :created, location: api_place_url(@place)
     else
       render json: @place.errors, status: :unprocessable_entity
     end
