@@ -6,7 +6,7 @@ class Api::PlacesController < ApplicationController
 
   # GET /places
   def index
-    @places = Place.by_token(@token)
+    @places = Place.by_token(@token).search(params[:name]).sorted_by_name
 
     render json: @places
   end
